@@ -15,3 +15,20 @@ This is a prototype version built to demonstrate the core idea and workflow.
 > Features, UI, and logic may change as development continues.
 
 ---
+## Tech Stack
+
+- Python
+- FastAPI
+- React 
+- SQLite
+- Gemma
+
+  ## Project Structure
+
+```text
+crashsentinel/
+├── backend/
+├── frontend/
+└── .gitignore
+```
+
