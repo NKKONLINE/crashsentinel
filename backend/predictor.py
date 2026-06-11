@@ -1,4 +1,5 @@
 import json
+import platform
 from database import Session, CrashReport, SyslogEntry, PredictionAlert
 from analyzer import generate_prediction_alert
 from datetime import datetime
@@ -73,8 +74,12 @@ def store_crash_report(crash_log: str, analysis: dict):
         ai_explanation=analysis.get("explanation", ""),
         root_cause=analysis.get("root_cause", ""),
         severity=analysis.get("severity", "medium"),
-        symptoms=json.dumps(analysis.get("symptoms", []))
+        symptoms=json.dumps(analysis.get("symptoms", [])),
+        recommendations=json.dumps(analysis.get("recommendations", [])),  
+        source_os=platform.system().lower(),                               
+        is_simulated=0
     )
+    
     session.add(report)
     session.commit()
     session.close()
