@@ -78,7 +78,7 @@ SIMULATED_LOGS = [
 ]
 
 def simulate_logs() -> list:
-    logger.warning("[log_collector] ⚠️  Using SIMULATED logs — no real log source found")
+    logger.warning("[log_collector]   Using SIMULATED logs — no real log source found")
     return SIMULATED_LOGS
 
 
@@ -259,7 +259,7 @@ def parse_and_store_logs() -> tuple[list, list]:
     raw_lines, os_name, source_label, is_simulated = get_system_logs()
 
     if is_simulated:
-        logger.warning("[log_collector] ⚠️  Data source is SIMULATED — not real system logs")
+        logger.warning("[log_collector]   Data source is SIMULATED — not real system logs")
 
     crashes_found = []
     warnings_found = []
@@ -274,7 +274,7 @@ def parse_and_store_logs() -> tuple[list, list]:
         for pattern in CRASH_PATTERNS:
             if re.search(pattern, line, re.IGNORECASE):
                 crashes_found.append(line)
-                logger.info(f"[log_collector] 🔴 CRASH detected: {line[:80]}")
+                logger.info(f"[log_collector]  CRASH detected: {line[:80]}")
                 break
 
         # Check warning patterns
@@ -299,7 +299,7 @@ def parse_and_store_logs() -> tuple[list, list]:
                     is_simulated=1 if is_simulated else 0
                 )
                 session.add(entry)
-                logger.info(f"[log_collector] 🟡 WARNING stored: {line[:80]}")
+                logger.info(f"[log_collector]  WARNING stored: {line[:80]}")
                 break
 
     session.commit()
