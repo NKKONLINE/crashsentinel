@@ -9,7 +9,7 @@ import re
 import platform
 import subprocess
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from database import Session, SyslogEntry
 
 # ── Logger setup ─────────────────────────────────────────────────────
@@ -290,7 +290,7 @@ def parse_and_store_logs() -> tuple[list, list]:
 
                 warnings_found.append(line)
                 entry = SyslogEntry(
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                     source=source_label,
                     source_os=os_name,
                     level="WARN",
