@@ -153,6 +153,7 @@ export default function App() {
   const [manualLog, setManualLog] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [backendOnline, setBackendOnline] = useState(null); // null=checking, true, false
 
   useEffect(() => {
     fetchAll();
@@ -171,29 +172,42 @@ export default function App() {
   };
 
   const fetchReports = async () => {
-    const r = await axios.get(`${API}/reports`);
-    setReports(r.data);
-    if (r.data.length > 0 && !selected) setSelected(r.data[0]);
+    try {
+      const r = await axios.get(`${API}/reports`);
+      setReports(r.data);
+      setBackendOnline(true);
+      if (r.data.length > 0 && !selected) setSelected(r.data[0]);
+    } catch {
+      setBackendOnline(false);
+    }
   };
 
   const fetchAlerts = async () => {
-    const r = await axios.get(`${API}/alerts`);
-    setAlerts(r.data);
+    try {
+      const r = await axios.get(`${API}/alerts`);
+      setAlerts(r.data);
+    } catch { /* silently ignore */ }
   };
 
   const fetchStats = async () => {
-    const r = await axios.get(`${API}/stats`);
-    setStats(r.data);
+    try {
+      const r = await axios.get(`${API}/stats`);
+      setStats(r.data);
+    } catch { /* silently ignore */ }
   };
 
   const fetchSummary = async () => {
-    const r = await axios.get(`${API}/summary`);
-    setSummary(r.data.summary);
+    try {
+      const r = await axios.get(`${API}/summary`);
+      setSummary(r.data.summary);
+    } catch { /* silently ignore */ }
   };
 
   const dismissAlert = async (id) => {
-    await axios.post(`${API}/alerts/${id}/dismiss`);
-    fetchAlerts();
+    try {
+      await axios.post(`${API}/alerts/${id}/dismiss`);
+      fetchAlerts();
+    } catch { /* silently ignore */ }
   };
 
   const analyzeManual = async () => {
@@ -203,6 +217,8 @@ export default function App() {
       await axios.post(`${API}/analyze`, { log: manualLog });
       setManualLog("");
       setTimeout(fetchAll, 1000);
+    } catch (e) {
+      alert("Analysis failed: " + (e.response?.data?.detail || e.message));
     } finally {
       setAnalyzing(false);
     }
@@ -233,14 +249,40 @@ export default function App() {
             Local AI Crash Detection powered by Gemma 4
           </small>
         </div>
-        <button onClick={fetchAll} style={{
-          background: "#21262d", color: "#58a6ff", border: "1px solid #30363d",
-          padding: "8px 16px", borderRadius: "6px", cursor: "pointer",
-          fontFamily: "monospace"
-        }}>
-          ↻ Refresh
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <span style={{
+            display: "inline-flex", alignItems: "center", gap: "6px",
+            fontSize: "12px",
+            color: backendOnline === null ? "#6b7280" : backendOnline ? "#22c55e" : "#ef4444"
+          }}>
+            <span style={{
+              width: "8px", height: "8px", borderRadius: "50%",
+              background: backendOnline === null ? "#6b7280" : backendOnline ? "#22c55e" : "#ef4444",
+              display: "inline-block"
+            }} />
+            {backendOnline === null ? "Connecting..." : backendOnline ? "Backend Online" : "Backend Offline — start crashsentinel_simple.py"}
+          </span>
+          <button onClick={fetchAll} style={{
+            background: "#21262d", color: "#58a6ff", border: "1px solid #30363d",
+            padding: "8px 16px", borderRadius: "6px", cursor: "pointer",
+            fontFamily: "monospace"
+          }}>
+            ↻ Refresh
+          </button>
+        </div>
       </div>
+
+      {/* Backend offline banner */}
+      {backendOnline === false && (
+        <div style={{
+          background: "#2b0f0f", border: "1px solid #ef4444",
+          borderRadius: "10px", padding: "16px 20px", marginBottom: "24px",
+          color: "#ef4444"
+        }}>
+          ⚠️ Cannot reach backend at <code>http://localhost:8888</code>. 
+          Make sure <code>python crashsentinel_simple.py</code> is running in your backend terminal.
+        </div>
+      )}
 
       {/* Alerts */}
       {alerts.length > 0 && (

@@ -5,7 +5,7 @@ import {
   PieChart, Pie, Cell, BarChart, Bar, Legend
 } from "recharts";
 
-const API = "http://localhost:8000";
+const API = "http://localhost:8888";
 
 const COLORS = ["#ef4444", "#f59e0b", "#22c55e", "#a855f7", "#58a6ff", "#f97316"];
 
