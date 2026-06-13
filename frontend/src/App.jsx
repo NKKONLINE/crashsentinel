@@ -2,7 +2,7 @@ import Charts from "./Charts";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const API = "http://localhost:8001";
+const API = "http://localhost:8888";
 
 const SEVERITY_COLORS = {
   low: { bg: "#0d2b1a", border: "#22c55e", text: "#22c55e" },
@@ -246,7 +246,7 @@ export default function App() {
       {alerts.length > 0 && (
         <div style={{ marginBottom: "24px" }}>
           <h3 style={{ color: "#f97316", marginBottom: "12px" }}>
-            Active Alerts ({alerts.length})
+             Active Alerts ({alerts.length})
           </h3>
           {alerts.map(a => (
             <AlertBanner key={a.id} alert={a} onDismiss={dismissAlert} />
@@ -321,9 +321,9 @@ export default function App() {
         </div>
       )}
       {/* Charts Tab */}
-      {activeTab === "charts" && (
-        <Charts />
-      )}
+        {activeTab === "charts" && (
+           <Charts />
+        )}
       {/* Analyze Tab */}
       {activeTab === "analyze" && (
         <div style={{
