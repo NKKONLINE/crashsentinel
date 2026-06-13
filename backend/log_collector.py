@@ -13,16 +13,9 @@ from datetime import datetime, timezone
 from database import Session, SyslogEntry
 
 # ── Logger setup ─────────────────────────────────────────────────────
-os.makedirs("logs", exist_ok=True)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[
-        logging.FileHandler("logs/crashsentinel.log"),   # writes to logs/crashsentinel.log
-        logging.StreamHandler()                           # also prints to terminal
-    ]
-)
+# NOTE: basicConfig is intentionally NOT called here.
+# main.py owns logging setup for the whole app.
+# log_collector just gets its own named logger.
 logger = logging.getLogger("log_collector")
 
 

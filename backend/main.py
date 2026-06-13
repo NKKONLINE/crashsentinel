@@ -18,6 +18,7 @@ import logging
 import threading
 import time
 from collections import defaultdict
+from contextlib import asynccontextmanager
 from datetime import datetime
 
 from fastapi import FastAPI, HTTPException
@@ -35,11 +36,19 @@ logging.basicConfig(
 )
 logger = logging.getLogger("main")
 
+# ── Lifespan (replaces deprecated @app.on_event) ─────────────────────
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    start_monitor()   # runs on startup
+    yield             # app is now running
+                      # anything after yield runs on shutdown
+
 # ── App ───────────────────────────────────────────────────────────────
 app = FastAPI(
     title="CrashSentinel API",
     description="Local AI crash detection and prediction system",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -90,11 +99,6 @@ def start_monitor():
     t = threading.Thread(target=monitoring_loop, daemon=True, name="monitor")
     t.start()
     logger.info("[Monitor] Thread started")
-
-
-@app.on_event("startup")
-def on_startup():
-    start_monitor()
 
 
 # ── Routes ────────────────────────────────────────────────────────────
