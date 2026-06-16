@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+sqlalchemy
+watchdog
+requests
+schedule
+python-dateutil
+psutil
